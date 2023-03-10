@@ -13,5 +13,7 @@ class Parser:
         return self._filename(index, basename=basename, absolute=absolute)
 
     def filenames(self, basename=False, absolute=False):
-        return [self._filename(index, basename=basename, absolute=absolute) for index in range(len(self))]
-
+        return [
+            self._filename(index, basename=basename, absolute=absolute)
+            for index in range(len(self))
+        ]

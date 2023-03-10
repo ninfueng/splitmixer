@@ -5,7 +5,6 @@ from .cait import *
 from .coat import *
 from .convit import *
 from .convmixer import *
-from .splitmixer import *
 from .convnext import *
 from .crossvit import *
 from .cspnet import *
@@ -15,14 +14,28 @@ from .dla import *
 from .dpn import *
 from .edgenext import *
 from .efficientnet import *
+from .factory import create_model, parse_model_name, safe_model_name
 from .ghostnet import *
 from .gluon_resnet import *
 from .gluon_xception import *
 from .hardcorenas import *
+from .helpers import load_checkpoint, model_parameters, resume_checkpoint
 from .hrnet import *
 from .inception_resnet_v2 import *
 from .inception_v3 import *
 from .inception_v4 import *
+from .layers import (
+    TestTimePoolHead,
+    apply_test_time_pool,
+    convert_splitbn_model,
+    convert_sync_batchnorm,
+    is_exportable,
+    is_no_jit,
+    is_scriptable,
+    set_exportable,
+    set_no_jit,
+    set_scriptable,
+)
 from .levit import *
 from .mlp_mixer import *
 from .mobilenetv3 import *
@@ -33,6 +46,19 @@ from .nfnet import *
 from .pit import *
 from .pnasnet import *
 from .poolformer import *
+from .registry import (
+    get_pretrained_cfg,
+    get_pretrained_cfg_value,
+    has_pretrained_cfg_key,
+    is_model,
+    is_model_in_modules,
+    is_model_pretrained,
+    is_pretrained_cfg_key,
+    list_models,
+    list_modules,
+    model_entrypoint,
+    register_model,
+)
 from .regnet import *
 from .res2net import *
 from .resnest import *
@@ -43,6 +69,7 @@ from .selecsls import *
 from .senet import *
 from .sequencer import *
 from .sknet import *
+from .splitmixer import *
 from .swin_transformer import *
 from .swin_transformer_v2 import *
 from .swin_transformer_v2_cr import *
@@ -59,11 +86,3 @@ from .vovnet import *
 from .xception import *
 from .xception_aligned import *
 from .xcit import *
-
-from .factory import create_model, parse_model_name, safe_model_name
-from .helpers import load_checkpoint, resume_checkpoint, model_parameters
-from .layers import TestTimePoolHead, apply_test_time_pool
-from .layers import convert_splitbn_model, convert_sync_batchnorm
-from .layers import is_scriptable, is_exportable, set_scriptable, set_exportable, is_no_jit, set_no_jit
-from .registry import register_model, model_entrypoint, list_models, is_model, list_modules, is_model_in_modules,\
-    is_model_pretrained, get_pretrained_cfg, has_pretrained_cfg_key, is_pretrained_cfg_key, get_pretrained_cfg_value

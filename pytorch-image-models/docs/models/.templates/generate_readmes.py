@@ -5,9 +5,8 @@ Run this script to generate the model-index files in `models` from the templates
 import argparse
 from pathlib import Path
 
-from jinja2 import Environment, FileSystemLoader
-
 import modelindex
+from jinja2 import Environment, FileSystemLoader
 
 
 def generate_readmes(templates_path: Path, dest_path: Path):

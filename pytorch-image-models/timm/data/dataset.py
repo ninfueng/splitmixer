@@ -2,11 +2,11 @@
 
 Hacked together by / Copyright 2019, Ross Wightman
 """
-import torch.utils.data as data
-import os
-import torch
 import logging
+import os
 
+import torch
+import torch.utils.data as data
 from PIL import Image
 
 from .parsers import create_parser
@@ -18,18 +18,17 @@ _ERROR_RETRY = 50
 
 
 class ImageDataset(data.Dataset):
-
     def __init__(
-            self,
-            root,
-            parser=None,
-            class_map=None,
-            load_bytes=False,
-            transform=None,
-            target_transform=None,
+        self,
+        root,
+        parser=None,
+        class_map=None,
+        load_bytes=False,
+        transform=None,
+        target_transform=None,
     ):
         if parser is None or isinstance(parser, str):
-            parser = create_parser(parser or '', root=root, class_map=class_map)
+            parser = create_parser(parser or "", root=root, class_map=class_map)
         self.parser = parser
         self.load_bytes = load_bytes
         self.transform = transform
@@ -39,9 +38,11 @@ class ImageDataset(data.Dataset):
     def __getitem__(self, index):
         img, target = self.parser[index]
         try:
-            img = img.read() if self.load_bytes else Image.open(img).convert('RGB')
+            img = img.read() if self.load_bytes else Image.open(img).convert("RGB")
         except Exception as e:
-            _logger.warning(f'Skipped sample (index {index}, file {self.parser.filename(index)}). {str(e)}')
+            _logger.warning(
+                f"Skipped sample (index {index}, file {self.parser.filename(index)}). {str(e)}"
+            )
             self._consecutive_errors += 1
             if self._consecutive_errors < _ERROR_RETRY:
                 return self.__getitem__((index + 1) % len(self.parser))
@@ -67,24 +68,29 @@ class ImageDataset(data.Dataset):
 
 
 class IterableImageDataset(data.IterableDataset):
-
     def __init__(
-            self,
-            root,
-            parser=None,
-            split='train',
-            is_training=False,
-            batch_size=None,
-            repeats=0,
-            download=False,
-            transform=None,
-            target_transform=None,
+        self,
+        root,
+        parser=None,
+        split="train",
+        is_training=False,
+        batch_size=None,
+        repeats=0,
+        download=False,
+        transform=None,
+        target_transform=None,
     ):
         assert parser is not None
         if isinstance(parser, str):
             self.parser = create_parser(
-                parser, root=root, split=split, is_training=is_training,
-                batch_size=batch_size, repeats=repeats, download=download)
+                parser,
+                root=root,
+                split=split,
+                is_training=is_training,
+                batch_size=batch_size,
+                repeats=repeats,
+                download=download,
+            )
         else:
             self.parser = parser
         self.transform = transform
@@ -100,13 +106,13 @@ class IterableImageDataset(data.IterableDataset):
             yield img, target
 
     def __len__(self):
-        if hasattr(self.parser, '__len__'):
+        if hasattr(self.parser, "__len__"):
             return len(self.parser)
         else:
             return 0
 
     def filename(self, index, basename=False, absolute=False):
-        assert False, 'Filename lookup by index not supported, use filenames().'
+        assert False, "Filename lookup by index not supported, use filenames()."
 
     def filenames(self, basename=False, absolute=False):
         return self.parser.filenames(basename, absolute)
@@ -124,7 +130,9 @@ class AugMixDataset(torch.utils.data.Dataset):
         self.num_splits = num_splits
 
     def _set_transforms(self, x):
-        assert isinstance(x, (list, tuple)) and len(x) == 3, 'Expecting a tuple/list of 3 transforms'
+        assert (
+            isinstance(x, (list, tuple)) and len(x) == 3
+        ), "Expecting a tuple/list of 3 transforms"
         self.dataset.transform = x[0]
         self.augmentation = x[1]
         self.normalize = x[2]
@@ -142,7 +150,9 @@ class AugMixDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, i):
         x, y = self.dataset[i]  # all splits share the same dataset base transform
-        x_list = [self._normalize(x)]  # first split only normalizes (this is the 'clean' split)
+        x_list = [
+            self._normalize(x)
+        ]  # first split only normalizes (this is the 'clean' split)
         # run the full augmentation on the remaining splits
         for _ in range(self.num_splits - 1):
             x_list.append(self._normalize(self.augmentation(x)))

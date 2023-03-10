@@ -4,17 +4,20 @@ Based on Numpy example at https://github.com/google-research/reassessed-imagenet
 
 Hacked together by / Copyright 2020 Ross Wightman
 """
-import os
 import json
+import os
+
 import numpy as np
 
 
 class RealLabelsImagenet:
-
-    def __init__(self, filenames, real_json='real.json', topk=(1, 5)):
+    def __init__(self, filenames, real_json="real.json", topk=(1, 5)):
         with open(real_json) as real_labels:
             real_labels = json.load(real_labels)
-            real_labels = {f'ILSVRC2012_val_{i + 1:08d}.JPEG': labels for i, labels in enumerate(real_labels)}
+            real_labels = {
+                f"ILSVRC2012_val_{i + 1:08d}.JPEG": labels
+                for i, labels in enumerate(real_labels)
+            }
         self.real_labels = real_labels
         self.filenames = filenames
         assert len(self.filenames) == len(self.real_labels)
@@ -32,7 +35,8 @@ class RealLabelsImagenet:
             if self.real_labels[filename]:
                 for k in self.topk:
                     self.is_correct[k].append(
-                        any([p in self.real_labels[filename] for p in pred[:k]]))
+                        any([p in self.real_labels[filename] for p in pred[:k]])
+                    )
             self.sample_idx += 1
 
     def get_accuracy(self, k=None):

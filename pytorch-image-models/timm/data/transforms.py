@@ -1,19 +1,21 @@
 import torch
 import torchvision.transforms.functional as F
+
 try:
     from torchvision.transforms.functional import InterpolationMode
+
     has_interpolation_mode = True
 except ImportError:
     has_interpolation_mode = False
-from PIL import Image
-import warnings
 import math
 import random
+import warnings
+
 import numpy as np
+from PIL import Image
 
 
 class ToNumpy:
-
     def __call__(self, pil_img):
         np_img = np.array(pil_img, dtype=np.uint8)
         if np_img.ndim < 3:
@@ -23,7 +25,6 @@ class ToNumpy:
 
 
 class ToTensor:
-
     def __init__(self, dtype=torch.float32):
         self.dtype = dtype
 
@@ -40,21 +41,21 @@ class ToTensor:
 # removed in Pillow 10.
 if hasattr(Image, "Resampling"):
     _pil_interpolation_to_str = {
-        Image.Resampling.NEAREST: 'nearest',
-        Image.Resampling.BILINEAR: 'bilinear',
-        Image.Resampling.BICUBIC: 'bicubic',
-        Image.Resampling.BOX: 'box',
-        Image.Resampling.HAMMING: 'hamming',
-        Image.Resampling.LANCZOS: 'lanczos',
+        Image.Resampling.NEAREST: "nearest",
+        Image.Resampling.BILINEAR: "bilinear",
+        Image.Resampling.BICUBIC: "bicubic",
+        Image.Resampling.BOX: "box",
+        Image.Resampling.HAMMING: "hamming",
+        Image.Resampling.LANCZOS: "lanczos",
     }
 else:
     _pil_interpolation_to_str = {
-        Image.NEAREST: 'nearest',
-        Image.BILINEAR: 'bilinear',
-        Image.BICUBIC: 'bicubic',
-        Image.BOX: 'box',
-        Image.HAMMING: 'hamming',
-        Image.LANCZOS: 'lanczos',
+        Image.NEAREST: "nearest",
+        Image.BILINEAR: "bilinear",
+        Image.BICUBIC: "bicubic",
+        Image.BOX: "box",
+        Image.HAMMING: "hamming",
+        Image.LANCZOS: "lanczos",
     }
 
 _str_to_pil_interpolation = {b: a for a, b in _pil_interpolation_to_str.items()}
@@ -62,12 +63,12 @@ _str_to_pil_interpolation = {b: a for a, b in _pil_interpolation_to_str.items()}
 
 if has_interpolation_mode:
     _torch_interpolation_to_str = {
-        InterpolationMode.NEAREST: 'nearest',
-        InterpolationMode.BILINEAR: 'bilinear',
-        InterpolationMode.BICUBIC: 'bicubic',
-        InterpolationMode.BOX: 'box',
-        InterpolationMode.HAMMING: 'hamming',
-        InterpolationMode.LANCZOS: 'lanczos',
+        InterpolationMode.NEAREST: "nearest",
+        InterpolationMode.BILINEAR: "bilinear",
+        InterpolationMode.BICUBIC: "bicubic",
+        InterpolationMode.BOX: "box",
+        InterpolationMode.HAMMING: "hamming",
+        InterpolationMode.LANCZOS: "lanczos",
     }
     _str_to_torch_interpolation = {b: a for a, b in _torch_interpolation_to_str.items()}
 else:
@@ -93,7 +94,7 @@ def interp_mode_to_str(mode):
         return _pil_interpolation_to_str[mode]
 
 
-_RANDOM_INTERPOLATION = (str_to_interp_mode('bilinear'), str_to_interp_mode('bicubic'))
+_RANDOM_INTERPOLATION = (str_to_interp_mode("bilinear"), str_to_interp_mode("bicubic"))
 
 
 class RandomResizedCropAndInterpolation:
@@ -111,8 +112,13 @@ class RandomResizedCropAndInterpolation:
         interpolation: Default: PIL.Image.BILINEAR
     """
 
-    def __init__(self, size, scale=(0.08, 1.0), ratio=(3. / 4., 4. / 3.),
-                 interpolation='bilinear'):
+    def __init__(
+        self,
+        size,
+        scale=(0.08, 1.0),
+        ratio=(3.0 / 4.0, 4.0 / 3.0),
+        interpolation="bilinear",
+    ):
         if isinstance(size, (list, tuple)):
             self.size = tuple(size)
         else:
@@ -120,7 +126,7 @@ class RandomResizedCropAndInterpolation:
         if (scale[0] > scale[1]) or (ratio[0] > ratio[1]):
             warnings.warn("range should be of kind (min, max)")
 
-        if interpolation == 'random':
+        if interpolation == "random":
             self.interpolation = _RANDOM_INTERPOLATION
         else:
             self.interpolation = str_to_interp_mode(interpolation)
@@ -187,11 +193,13 @@ class RandomResizedCropAndInterpolation:
 
     def __repr__(self):
         if isinstance(self.interpolation, (tuple, list)):
-            interpolate_str = ' '.join([interp_mode_to_str(x) for x in self.interpolation])
+            interpolate_str = " ".join(
+                [interp_mode_to_str(x) for x in self.interpolation]
+            )
         else:
             interpolate_str = interp_mode_to_str(self.interpolation)
-        format_string = self.__class__.__name__ + '(size={0}'.format(self.size)
-        format_string += ', scale={0}'.format(tuple(round(s, 4) for s in self.scale))
-        format_string += ', ratio={0}'.format(tuple(round(r, 4) for r in self.ratio))
-        format_string += ', interpolation={0})'.format(interpolate_str)
+        format_string = self.__class__.__name__ + "(size={0}".format(self.size)
+        format_string += ", scale={0}".format(tuple(round(s, 4) for s in self.scale))
+        format_string += ", ratio={0}".format(tuple(round(r, 4) for r in self.ratio))
+        format_string += ", interpolation={0})".format(interpolate_str)
         return format_string
